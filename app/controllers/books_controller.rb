@@ -1,4 +1,7 @@
 class BooksController < ApplicationController
+	before_action :authenticate_user!
+	before_action :baria_user, only: [:edit, :update]
+
 
   def show
 	  @book = Book.find(params[:id])
@@ -23,7 +26,7 @@ class BooksController < ApplicationController
   		redirect_to @book, notice: "successfully created book!"#保存された場合の移動先を指定。
   	else
 		@books = Book.all
-		  render 'index', notic: "error"
+  		render 'index', notic: "error"
   	end
   end
 
@@ -53,5 +56,12 @@ class BooksController < ApplicationController
   def book_params
   	params.require(:book).permit(:title, :body,)
   end
+
+  def baria_user
+	unless Book.find(params[:id]).user.id.to_i == current_user.id
+		redirect_to books_path
+	end
+ end
+
 
 end
